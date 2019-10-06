@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousSocketChannel;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 public class Client {
@@ -35,10 +36,22 @@ public class Client {
                 byte[] inputBytes = input.getBytes();
                 ByteBuffer buffer = ByteBuffer.wrap(inputBytes);
                 Future<Integer> writeResult = clientChannel.write(buffer);
+                writeResult.get();
+                String echo = new String(buffer.array());
+                buffer.clear();
+                System.out.println(echo);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
-    
+
+    public static void main(String[] args) {
+        Client client = new Client();
+        client.start();
+    }
 }
